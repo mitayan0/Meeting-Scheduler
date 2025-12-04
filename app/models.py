@@ -2,8 +2,7 @@
 
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import Column, String, Text, DateTime, ForeignKey, Enum, UniqueConstraint
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, Text, DateTime, ForeignKey, Enum, UniqueConstraint, Uuid
 from sqlalchemy.orm import relationship
 import enum
 
@@ -22,7 +21,7 @@ class Meeting(Base):
     
     __tablename__ = "meetings"
     
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     start_time = Column(DateTime(timezone=True), nullable=False)
@@ -43,7 +42,7 @@ class Participant(Base):
     
     __tablename__ = "participants"
     
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String(255), nullable=False)
     email = Column(String(255), unique=True, nullable=False)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
@@ -60,9 +59,9 @@ class MeetingParticipant(Base):
     
     __tablename__ = "meeting_participants"
     
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    meeting_id = Column(UUID(as_uuid=True), ForeignKey("meetings.id", ondelete="CASCADE"), nullable=False)
-    participant_id = Column(UUID(as_uuid=True), ForeignKey("participants.id", ondelete="CASCADE"), nullable=False)
+    id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    meeting_id = Column(Uuid(as_uuid=True), ForeignKey("meetings.id", ondelete="CASCADE"), nullable=False)
+    participant_id = Column(Uuid(as_uuid=True), ForeignKey("participants.id", ondelete="CASCADE"), nullable=False)
     status = Column(Enum(ParticipantStatus), default=ParticipantStatus.pending, nullable=False)
     notified_at = Column(DateTime(timezone=True), nullable=True)
     

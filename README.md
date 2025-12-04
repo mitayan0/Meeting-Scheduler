@@ -626,22 +626,24 @@ The ICS export functionality adheres to **RFC 5545** (iCalendar), ensuring compa
     - Add GraphQL API as an alternative to REST
 
 ## Running Tests
+ 
+ The project includes automated tests using `pytest`. Tests use **SQLite** for simplicity and speed, so no external database setup is required.
+ 
+ ```bash
+ # Run all tests
+ pytest
+ 
+ # Run with coverage report
+ pytest --cov=app
+ 
+ # Run specific test file
+ pytest tests/test_meetings.py
+ 
+ # Run with verbose output
+ pytest -v
+ ```
 
-The project includes automated tests using `pytest`.
-
-```bash
-# Run all tests
-pytest
-
-# Run with coverage report
-pytest --cov=app
-
-# Run specific test file
-pytest tests/test_meetings.py
-
-# Run with verbose output
-pytest -v
-```
+**Note**: The test database schema is automatically created and dropped for each test to ensure test isolation.
 
 ## Additional Resources
 
