@@ -1,4 +1,4 @@
-# Meeting Scheduler API
+# Meeting Scheduler
 
 A comprehensive FastAPI-based meeting scheduler with PostgreSQL database, featuring meeting management, participant coordination, conflict detection, and ICS calendar export functionality.
 
