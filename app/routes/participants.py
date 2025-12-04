@@ -3,12 +3,12 @@
 from typing import List
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import Participant
-from app.schemas import ParticipantCreate, ParticipantResponse, MeetingResponse
+from app.schemas import ParticipantCreate, ParticipantUpdate, ParticipantResponse, MeetingResponse
 from app.services.meeting_service import MeetingService
 
 router = APIRouter(prefix="/api/participants", tags=["Participants"])
@@ -140,3 +140,83 @@ def get_participant_meetings(
         response.append(meeting_dict)
     
     return response
+
+
+@router.put("/{participant_id}", response_model=ParticipantResponse)
+def update_participant(
+    participant_id: UUID,
+    participant_data: ParticipantUpdate,
+    db: Session = Depends(get_db)
+):
+    """
+    Update a participant.
+    
+    Args:
+        participant_id: Participant ID
+        participant_data: Participant update data
+        db: Database session
+        
+    Returns:
+        Updated participant
+    """
+    participant = db.query(Participant).filter(
+        Participant.id == participant_id
+    ).first()
+    
+    if not participant:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Participant with id {participant_id} not found"
+        )
+    
+    # Check if email is being updated and if it already exists
+    if participant_data.email and participant_data.email != participant.email:
+        existing = db.query(Participant).filter(
+            Participant.email == participant_data.email
+        ).first()
+        
+        if existing:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Participant with this email already exists"
+            )
+    
+    # Update fields
+    if participant_data.name is not None:
+        participant.name = participant_data.name
+    if participant_data.email is not None:
+        participant.email = participant_data.email
+    
+    db.commit()
+    db.refresh(participant)
+    
+    return participant
+
+
+@router.delete("/{participant_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_participant(
+    participant_id: UUID,
+    db: Session = Depends(get_db)
+):
+    """
+    Delete a participant.
+    
+    Args:
+        participant_id: Participant ID
+        db: Database session
+    """
+    participant = db.query(Participant).filter(
+        Participant.id == participant_id
+    ).first()
+    
+    if not participant:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Participant with id {participant_id} not found"
+        )
+    
+    db.delete(participant)
+    db.commit()
+    
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+

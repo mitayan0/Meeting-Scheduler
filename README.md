@@ -10,155 +10,318 @@ A comprehensive FastAPI-based meeting scheduler with PostgreSQL database, featur
 ✅ **ICS Export** - Export meetings in standard iCalendar format for calendar imports  
 ✅ **Simulated Notifications** - Logging-based notification system for meeting events  
 ✅ **RESTful API** - Clean, well-documented API with interactive OpenAPI docs  
-✅ **Docker Support** - Full Docker and Docker Compose configuration for easy deployment  
 ✅ **Database Migrations** - Alembic-based migrations for schema management  
 ✅ **Automated Tests** - Pytest-based test suite for core functionality
+
+## Quick Start
+
+Get the application running in 5 minutes:
+
+```bash
+# 1. Clone and navigate to the project
+git clone <repository-url>
+cd meeting-scheduler
+
+# 2. Set up virtual environment and install dependencies
+python -m venv venv
+venv\Scripts\activate  # Windows
+pip install -r requirements.txt
+
+# 3. Configure environment (edit .env with your database credentials)
+copy .env.example .env
+
+# 4. Create database
+createdb -h localhost -p 5431 -U postgres meeting_scheduler
+
+# 5. Set up schema (choose one method)
+psql -h localhost -p 5431 -U postgres -d meeting_scheduler -f schema.sql
+# OR
+alembic upgrade head
+
+# 6. Run the application
+uvicorn app.main:app --reload
+
+# 7. Open your browser to http://localhost:8000/docs
+```
+
+That's it! You can now test the API using the interactive Swagger UI or import the Postman collection.
 
 ## Technology Stack
 
 - **Backend Framework**: FastAPI 0.109+
-- **Database**: PostgreSQL 15 (SQLite for testing)
+- **Database**: PostgreSQL 15+
 - **ORM**: SQLAlchemy 2.0
 - **Migrations**: Alembic
 - **Validation**: Pydantic v2
 - **Testing**: pytest
-- **Containerization**: Docker & Docker Compose
 
 ## Project Structure
+
+A clean, well-organized project structure adhering to Python best practices:
 
 ```
 meeting-scheduler/
 ├── app/
-│   ├── routes/          # API endpoints
-│   ├── services/        # Business logic
-│   ├── models.py        # SQLAlchemy models
-│   ├── schemas.py       # Pydantic schemas
-│   ├── database.py      # Database configuration
-│   ├── config.py        # Application settings
-│   └── main.py          # FastAPI application
+│   ├── routes/          # API endpoints (meetings, participants, conflicts)
+│   ├── services/        # Business logic and complex operations
+│   ├── models.py        # SQLAlchemy database models
+│   ├── schemas.py       # Pydantic schemas for validation
+│   ├── database.py      # Database connection and session management
+│   ├── config.py        # Application settings and environment variables
+│   └── main.py          # FastAPI application entry point
 ├── alembic/             # Database migrations
+│   └── versions/        # Migration files
 ├── tests/               # Automated tests
-├── Dockerfile           # Docker configuration
-├── docker-compose.yml   # Multi-container setup
-└── requirements.txt     # Python dependencies
+│   ├── conftest.py      # Test configuration and fixtures
+│   ├── test_meetings.py # Meeting endpoint tests
+│   └── test_conflicts.py # Conflict detection tests
+├── schema.sql           # Database schema (alternative to Alembic)
+├── Meeting_Scheduler_API.postman_collection.json  # Postman collection
+├── requirements.txt     # Python dependencies
+├── .env.example         # Environment variable template
+└── README.md            # Project documentation
 ```
 
-## Installation & Setup
+## Installation & Execution
 
-### Option 1: Docker (Recommended)
+### Prerequisites
+
+- Python 3.11+
+- PostgreSQL 15+ running locally
+
+### Setup Instructions
 
 1. **Clone the repository**
-```bash
-git clone <repository-url>
-cd meeting-scheduler
-```
-
-2. **Start the application with Docker Compose**
-```bash
-docker-compose up --build
-```
-
-The API will be available at `http://localhost:8000`  
-PostgreSQL will be running on port `5432`
-
-3. **Access the interactive API documentation**
-- Swagger UI: http://localhost:8000/docs
-- ReDoc: http://localhost:8000/redoc
-
-### Option 2: Local Development
-
-1. **Prerequisites**
-- Python 3.11+
-- PostgreSQL 15+
+   ```bash
+   git clone <repository-url>
+   cd meeting-scheduler
+   ```
 
 2. **Create and activate virtual environment**
-```bash
-python -m venv venv
-# Windows
-venv\Scripts\activate
-# Linux/Mac
-source venv/bin/activate
-```
+   ```bash
+   python -m venv venv
+   # Windows
+   venv\Scripts\activate
+   # Linux/Mac
+   source venv/bin/activate
+   ```
 
 3. **Install dependencies**
-```bash
-pip install -r requirements.txt
-```
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 4. **Set up environment variables**
+   
+   Create a `.env` file in the root directory (or rename `.env.example`):
+   ```env
+   # Database Configuration
+   # Ensure the port matches your local PostgreSQL installation (default is 5432, user requested 5431)
+   DATABASE_URL=postgresql://postgres:postgres@localhost:5431/meeting_scheduler
+   
+   # Application Configuration
+   APP_NAME="Meeting Scheduler API"
+   APP_VERSION=1.0.0
+   DEBUG=True
+   
+   # Server Configuration
+   HOST=0.0.0.0
+   PORT=8000
+   ```
 
-Create a `.env` file:
-```env
-DATABASE_URL=postgresql://postgres:password@localhost:5432/meeting_scheduler
-DEBUG=True
-```
+5. **Create the database**
+   
+   Ensure your PostgreSQL server is running, then create the database:
+   ```bash
+   # Using command line tool if available
+   createdb -h localhost -p 5431 -U postgres meeting_scheduler
+   
+   # OR using SQL shell (psql)
+   # CREATE DATABASE meeting_scheduler;
+   ```
 
-5. **Create database**
-```bash
-createdb meeting_scheduler
-```
-
-6. **Run migrations**
-```bash
-alembic upgrade head
-```
+6. **Set up the database schema**
+   
+   You have two options:
+   
+   **Option A: Using schema.sql (Simpler for quick setup)**
+   ```bash
+   psql -h localhost -p 5431 -U postgres -d meeting_scheduler -f schema.sql
+   ```
+   
+   **Option B: Using Alembic migrations (Recommended for production)**
+   ```bash
+   alembic upgrade head
+   ```
+   
+   Both methods create the exact same database structure.
 
 7. **Start the application**
-```bash
-uvicorn app.main:app --reload
-```
+   ```bash
+   uvicorn app.main:app --reload
+   ```
 
-## API Usage Examples
+   The API will be available at `http://localhost:8000`.
+
+8. **Access Documentation**
+   - Swagger UI: http://localhost:8000/docs
+   - ReDoc: http://localhost:8000/redoc
+
+## API Usage Examples (Postman)
+
+The following examples demonstrate how to use the API with **Postman**. You can also use the interactive **Swagger UI** at `http://localhost:8000/docs`.
+
+### Setting Up Postman
+
+**Option 1: Import the Collection (Recommended)**
+1. Open Postman
+2. Click **Import** in the top left
+3. Select the file: `Meeting_Scheduler_API.postman_collection.json`
+4. The collection will be imported with all endpoints and automatic variable management
+
+**Option 2: Manual Setup**
+1. **Base URL**: Create an environment variable in Postman:
+   - Variable: `base_url`
+   - Value: `http://localhost:8000`
+
+2. **Create requests manually** using the examples below
+
+---
 
 ### 1. Create a Participant
 
-```bash
-curl -X POST "http://localhost:8000/api/participants/" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "John Doe",
-    "email": "john.doe@example.com"
-  }'
+**Request:**
+- **Method**: `POST`
+- **URL**: `{{base_url}}/api/participants/`
+- **Headers**: 
+  - `Content-Type: application/json`
+- **Body** (raw JSON):
+```json
+{
+  "name": "John Doe",
+  "email": "john.doe@example.com"
+}
 ```
 
-**Response:**
+**Expected Response** (201 Created):
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "name": "John Doe",
   "email": "john.doe@example.com",
-  "created_at": "2025-12-01T19:30:00Z"
+  "created_at": "2025-12-04T12:00:00Z"
 }
 ```
 
-### 2. Create a Meeting
+> 💡 **Tip**: Save the `id` from the response - you'll need it for creating meetings!
 
-```bash
-curl -X POST "http://localhost:8000/api/meetings/" \
-  -H "Content-Type: application/json" \
-  -d '{
+---
+
+### 2. Get All Participants
+
+**Request:**
+- **Method**: `GET`
+- **URL**: `{{base_url}}/api/participants/`
+
+**Expected Response** (200 OK):
+```json
+[
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "name": "John Doe",
+    "email": "john.doe@example.com",
+    "created_at": "2025-12-04T12:00:00Z"
+  }
+]
+```
+
+---
+
+### 3. Create a Meeting
+
+**Request:**
+- **Method**: `POST`
+- **URL**: `{{base_url}}/api/meetings/`
+- **Headers**: 
+  - `Content-Type: application/json`
+- **Body** (raw JSON):
+```json
+{
+  "title": "Team Standup",
+  "description": "Daily team standup meeting",
+  "start_time": "2025-12-05T09:00:00Z",
+  "end_time": "2025-12-05T09:30:00Z",
+  "location": "Conference Room A",
+  "participant_ids": ["550e8400-e29b-41d4-a716-446655440000"]
+}
+```
+
+**Expected Response** (201 Created):
+```json
+{
+  "id": "660e8400-e29b-41d4-a716-446655440001",
+  "title": "Team Standup",
+  "description": "Daily team standup meeting",
+  "start_time": "2025-12-05T09:00:00Z",
+  "end_time": "2025-12-05T09:30:00Z",
+  "location": "Conference Room A",
+  "created_at": "2025-12-04T12:05:00Z",
+  "updated_at": "2025-12-04T12:05:00Z",
+  "participants": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "status": "pending"
+    }
+  ]
+}
+```
+
+---
+
+### 4. Get All Meetings
+
+**Request:**
+- **Method**: `GET`
+- **URL**: `{{base_url}}/api/meetings/`
+
+**Expected Response** (200 OK):
+```json
+[
+  {
+    "id": "660e8400-e29b-41d4-a716-446655440001",
     "title": "Team Standup",
     "description": "Daily team standup meeting",
     "start_time": "2025-12-05T09:00:00Z",
     "end_time": "2025-12-05T09:30:00Z",
     "location": "Conference Room A",
-    "participant_ids": ["550e8400-e29b-41d4-a716-446655440000"]
-  }'
+    "created_at": "2025-12-04T12:05:00Z",
+    "updated_at": "2025-12-04T12:05:00Z",
+    "participants": [...]
+  }
+]
 ```
 
-### 3. Check for Scheduling Conflicts
+---
 
-```bash
-curl -X POST "http://localhost:8000/api/conflicts/check" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "participant_ids": ["550e8400-e29b-41d4-a716-446655440000"],
-    "start_time": "2025-12-05T09:15:00Z",
-    "end_time": "2025-12-05T09:45:00Z"
-  }'
+### 5. Check for Scheduling Conflicts
+
+**Request:**
+- **Method**: `POST`
+- **URL**: `{{base_url}}/api/conflicts/check`
+- **Headers**: 
+  - `Content-Type: application/json`
+- **Body** (raw JSON):
+```json
+{
+  "participant_ids": ["550e8400-e29b-41d4-a716-446655440000"],
+  "start_time": "2025-12-05T09:15:00Z",
+  "end_time": "2025-12-05T09:45:00Z"
+}
 ```
 
-**Response (with conflict):**
+**Expected Response - With Conflicts** (200 OK):
 ```json
 {
   "has_conflicts": true,
@@ -166,110 +329,311 @@ curl -X POST "http://localhost:8000/api/conflicts/check" \
     {
       "participant_id": "550e8400-e29b-41d4-a716-446655440000",
       "participant_name": "John Doe",
-      "participant_email": "john.doe@example.com",
-      "conflicting_meeting_id": "...",
-      "conflicting_meeting_title": "Team Standup",
-      "conflicting_start_time": "2025-12-05T09:00:00Z",
-      "conflicting_end_time": "2025-12-05T09:30:00Z"
+      "conflicting_meetings": [
+        {
+          "id": "660e8400-e29b-41d4-a716-446655440001",
+          "title": "Team Standup",
+          "start_time": "2025-12-05T09:00:00Z",
+          "end_time": "2025-12-05T09:30:00Z"
+        }
+      ]
     }
   ]
 }
 ```
 
-### 4. Export Meeting as ICS
-
-```bash
-curl -X GET "http://localhost:8000/api/meetings/{meeting_id}/export" \
-  --output meeting.ics
+**Expected Response - No Conflicts** (200 OK):
+```json
+{
+  "has_conflicts": false,
+  "conflicts": []
+}
 ```
 
-### 5. Get All Meetings for a Participant
+---
 
-```bash
-curl -X GET "http://localhost:8000/api/participants/{participant_id}/meetings"
+### 6. Update a Meeting
+
+**Request:**
+- **Method**: `PUT`
+- **URL**: `{{base_url}}/api/meetings/660e8400-e29b-41d4-a716-446655440001`
+- **Headers**: 
+  - `Content-Type: application/json`
+- **Body** (raw JSON):
+```json
+{
+  "title": "Team Standup - Updated",
+  "description": "Daily team standup meeting (updated)",
+  "start_time": "2025-12-05T09:00:00Z",
+  "end_time": "2025-12-05T09:30:00Z",
+  "location": "Conference Room B",
+  "participant_ids": ["550e8400-e29b-41d4-a716-446655440000"]
+}
 ```
 
-### 6. Get Meetings with Filters
+---
 
-```bash
-# Filter by date range
-curl -X GET "http://localhost:8000/api/meetings/?start_date=2025-12-01T00:00:00Z&end_date=2025-12-31T23:59:59Z"
+### 7. Export Meeting as ICS Calendar File
 
-# Filter by participant
-curl -X GET "http://localhost:8000/api/meetings/?participant_id=550e8400-e29b-41d4-a716-446655440000"
+**Request:**
+- **Method**: `GET`
+- **URL**: `{{base_url}}/api/meetings/660e8400-e29b-41d4-a716-446655440001/export`
+
+**Expected Response** (200 OK):
+- **Content-Type**: `text/calendar; charset=utf-8`
+- **Body**: ICS file content
+
+```ics
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Meeting Scheduler//EN
+BEGIN:VEVENT
+UID:660e8400-e29b-41d4-a716-446655440001
+SUMMARY:Team Standup
+DESCRIPTION:Daily team standup meeting
+DTSTART:20251205T090000Z
+DTEND:20251205T093000Z
+LOCATION:Conference Room A
+END:VEVENT
+END:VCALENDAR
 ```
+
+> 💡 **Tip**: In Postman, click "Save Response" → "Save to a file" to download the `.ics` file, which can be imported into Google Calendar, Outlook, or Apple Calendar.
+
+---
+
+### 8. Delete a Meeting
+
+**Request:**
+- **Method**: `DELETE`
+- **URL**: `{{base_url}}/api/meetings/660e8400-e29b-41d4-a716-446655440001`
+
+**Expected Response** (204 No Content):
+- No response body
+
+---
+
+### 9. Delete a Participant
+
+**Request:**
+- **Method**: `DELETE`
+- **URL**: `{{base_url}}/api/participants/550e8400-e29b-41d4-a716-446655440000`
+
+**Expected Response** (204 No Content):
+- No response body
+
+---
+
+### Postman Collection
+
+You can create a Postman collection with all these requests for easy testing. Alternatively, use the **Swagger UI** at `http://localhost:8000/docs` for interactive API documentation and testing.
 
 ## Database Schema
 
+The application uses a normalized relational database schema with three main tables.
+
+### Setup Options
+
+You have **two options** for setting up the database schema:
+
+#### Option 1: Using schema.sql (Simpler)
+```bash
+# Connect to PostgreSQL and run the schema file
+psql -h localhost -p 5431 -U postgres -d meeting_scheduler -f schema.sql
+```
+
+#### Option 2: Using Alembic Migrations (Recommended for production)
+```bash
+# Run migrations
+alembic upgrade head
+```
+
+Both methods create the exact same database structure.
+
+---
+
 ### Tables
 
-**meetings**
-- `id` (UUID) - Primary key
-- `title` (VARCHAR) - Meeting title
-- `description` (TEXT) - Optional description
-- `start_time` (TIMESTAMP WITH TIMEZONE) - Start time
-- `end_time` (TIMESTAMP WITH TIMEZONE) - End time
-- `location` (VARCHAR) - Optional location
-- `created_at` (TIMESTAMP WITH TIMEZONE)
-- `updated_at` (TIMESTAMP WITH TIMEZONE)
+1. **participants**
+   - `id` (UUID, PK): Unique identifier (auto-generated)
+   - `name` (VARCHAR(255)): Participant name
+   - `email` (VARCHAR(255), UNIQUE): Email address with validation
+   - `created_at` (TIMESTAMP WITH TIMEZONE): Record creation timestamp
+   - **Constraint**: Email must be unique and follow valid email format
 
-**participants**
-- `id` (UUID) - Primary key
-- `name` (VARCHAR) - Participant name
-- `email` (VARCHAR, UNIQUE) - Email address
-- `created_at` (TIMESTAMP WITH TIMEZONE)
+2. **meetings**
+   - `id` (UUID, PK): Unique identifier (auto-generated)
+   - `title` (VARCHAR(255)): Meeting title
+   - `description` (TEXT): Optional description
+   - `start_time` (TIMESTAMP WITH TIMEZONE): Meeting start time
+   - `end_time` (TIMESTAMP WITH TIMEZONE): Meeting end time
+   - `location` (VARCHAR(255)): Physical or virtual location (optional)
+   - `created_at` (TIMESTAMP WITH TIMEZONE): Record creation timestamp
+   - `updated_at` (TIMESTAMP WITH TIMEZONE): Last update timestamp
+   - **Constraint**: `end_time` must be after `start_time`
 
-**meeting_participants** (Junction table)
-- `id` (UUID) - Primary key
-- `meeting_id` (UUID) - Foreign key to meetings
-- `participant_id` (UUID) - Foreign key to participants
-- `status` (ENUM) - pending, accepted, declined
-- `notified_at` (TIMESTAMP WITH TIMEZONE)
-- Unique constraint on (meeting_id, participant_id)
+3. **meeting_participants** (Junction Table)
+   - `id` (UUID, PK): Unique identifier (auto-generated)
+   - `meeting_id` (UUID, FK): Reference to meetings table
+   - `participant_id` (UUID, FK): Reference to participants table
+   - `status` (ENUM): Participant status - 'pending', 'accepted', or 'declined'
+   - `notified_at` (TIMESTAMP WITH TIMEZONE): Timestamp of last notification (optional)
+   - **Constraint**: Unique combination of (meeting_id, participant_id)
+   - **Foreign Keys**: Both foreign keys have `ON DELETE CASCADE`
+
+### Indexes
+
+For optimal query performance, the following indexes are created:
+- `ix_participants_email` - Fast email lookups
+- `ix_meetings_start_time` - Critical for conflict detection
+- `ix_meetings_end_time` - Critical for conflict detection
+- `ix_meeting_participants_meeting_id` - Fast join queries
+- `ix_meeting_participants_participant_id` - Fast join queries
 
 ### Relationships
+- **Many-to-Many**: Meetings and Participants are related via the `meeting_participants` junction table
+- **Cascading Deletes**: Deleting a meeting or participant automatically removes associated records in `meeting_participants`
 
-- One meeting can have many participants (many-to-many)
-- Cascade delete: Deleting a meeting removes all participant associations
-- Email uniqueness enforced at database level
+### Entity Relationship Diagram (ERD)
+
+```
+┌─────────────────┐         ┌──────────────────────┐         ┌─────────────────┐
+│  participants   │         │ meeting_participants │         │    meetings     │
+├─────────────────┤         ├──────────────────────┤         ├─────────────────┤
+│ id (PK)         │◄───────┤ participant_id (FK)  │         │ id (PK)         │
+│ name            │         │ meeting_id (FK)      ├────────►│ title           │
+│ email (UNIQUE)  │         │ status (ENUM)        │         │ description     │
+│ created_at      │         │ notified_at          │         │ start_time      │
+└─────────────────┘         └──────────────────────┘         │ end_time        │
+                                                              │ location        │
+                                                              │ created_at      │
+                                                              │ updated_at      │
+                                                              └─────────────────┘
+```
 
 ## Architecture & Design Decisions
 
-### 1. **Conflict Detection Algorithm**
+### 1. **Layered Architecture**
+The application follows a clean layered architecture:
+- **Routes (Controllers)**: Handle HTTP requests and responses.
+- **Services**: Contain business logic (e.g., conflict checking, export logic).
+- **Repositories (via SQLAlchemy)**: Handle database interactions.
+- **Schemas (DTOs)**: Define data transfer objects and validation rules.
 
-The system checks for three types of time overlaps:
-- New meeting starts during an existing meeting
-- New meeting ends during an existing meeting
-- New meeting completely encompasses an existing meeting
+### 2. **Conflict Detection Strategy**
+The system implements a robust overlap detection algorithm that identifies three scenarios:
+- New meeting starts during an existing meeting.
+- New meeting ends during an existing meeting.
+- New meeting completely encompasses an existing meeting.
 
-### 2. **Timezone Handling**
+### 3. **Timezone Handling**
+All timestamps are stored and processed in **UTC** to ensure consistency across different timezones. The `TIMESTAMP WITH TIMEZONE` type in PostgreSQL is used to preserve temporal accuracy.
 
-All timestamps are stored in UTC with timezone awareness (`TIMESTAMP WITH TIMEZONE`), ensuring consistency across different timezones.
+### 4. **Standardized Exports**
+The ICS export functionality adheres to **RFC 5545** (iCalendar), ensuring compatibility with major calendar applications like Google Calendar, Outlook, and Apple Calendar.
 
-### 3. **Notification System**
+## Notable Limitations & Future Improvements
 
-Implemented as a simulated logging-based system to avoid external dependencies. In production, this can be replaced with actual email sending using services like SendGrid or AWS SES.
+### Current Limitations
 
-### 4. **ICS Export**
+1. **Notifications**: Currently simulated via logging; no actual email delivery
+   - Notifications are logged to console but not sent to participants
+   - `notified_at` timestamp is tracked but no real notification occurs
 
-Uses the iCalendar standard (RFC 5545) with proper VEVENT components, making exported files compatible with all major calendar applications (Google Calendar, Outlook, Apple Calendar).
+2. **Authentication & Authorization**: No user login or API key protection
+   - Anyone can access and modify all meetings and participants
+   - No concept of meeting ownership or access control
+   - No API rate limiting
 
-### 5. **API Design**
+3. **Recurring Meetings**: Only single-instance meetings are supported
+   - Cannot create daily, weekly, or monthly recurring meetings
+   - No support for RRULE (Recurrence Rule) in ICS exports
 
-RESTful API following standard conventions:
-- POST for creation
-- GET for retrieval
-- PUT for full updates
-- DELETE for removal
-- Proper HTTP status codes (201 for creation, 204 for deletion, etc.)
+4. **Pagination**: Large result sets are returned in full
+   - GET endpoints return all records without pagination
+   - Could cause performance issues with thousands of meetings
+
+5. **Time Zone Display**: All times are stored and returned in UTC
+   - No automatic conversion to user's local timezone
+   - Frontend applications must handle timezone conversion
+
+6. **Conflict Resolution**: System only detects conflicts, doesn't suggest alternatives
+   - No automatic meeting rescheduling suggestions
+   - No "find available time slot" functionality
+
+7. **Participant Response Tracking**: Status updates are manual
+   - No automated workflow for participants to accept/decline meetings
+   - No reminder system for pending responses
+
+### Suggested Future Improvements
+
+#### High Priority
+1. **Email Integration** 
+   - Integrate with SendGrid, AWS SES, or SMTP for real email delivery
+   - Send meeting invitations, updates, and cancellations
+   - Include ICS attachments in emails for easy calendar imports
+
+2. **Authentication & Authorization**
+   - Implement JWT-based authentication (OAuth2)
+   - Add user roles (admin, organizer, participant)
+   - Implement meeting ownership and access control
+   - Add API key support for third-party integrations
+
+3. **Pagination & Filtering**
+   - Add limit/offset pagination for list endpoints
+   - Implement filtering by date range, participant, location
+   - Add sorting options (by date, title, etc.)
+
+#### Medium Priority
+4. **Recurring Events**
+   - Support RRULE for recurring meetings (daily, weekly, monthly)
+   - Implement series management (edit single instance vs. entire series)
+   - Add exception dates for holidays/cancellations
+
+5. **Smart Scheduling**
+   - "Find available time slot" endpoint
+   - Suggest alternative times when conflicts are detected
+   - Consider participant preferences and working hours
+
+6. **Enhanced Conflict Detection**
+   - Add buffer time between meetings (e.g., 15-minute breaks)
+   - Consider participant time zones and working hours
+   - Detect over-booking (too many meetings in one day)
+
+7. **Rate Limiting & Security**
+   - Implement Redis-based rate limiting
+   - Add input sanitization and SQL injection protection
+   - Implement CORS policies for frontend integration
+
+#### Low Priority
+8. **Advanced Features**
+   - Meeting templates for common meeting types
+   - Integration with Google Calendar, Outlook, Apple Calendar APIs
+   - Video conferencing link generation (Zoom, Google Meet)
+   - Meeting analytics and reporting
+   - Participant availability tracking
+   - Automatic meeting transcription and notes
+
+9. **Performance Optimizations**
+   - Implement caching (Redis) for frequently accessed data
+   - Add database query optimization and connection pooling
+   - Implement background job processing (Celery) for notifications
+
+10. **Developer Experience**
+    - Add comprehensive API documentation with examples
+    - Create SDKs for popular languages (Python, JavaScript, Go)
+    - Provide Postman collection export
+    - Add GraphQL API as an alternative to REST
 
 ## Running Tests
+
+The project includes automated tests using `pytest`.
 
 ```bash
 # Run all tests
 pytest
 
-# Run with coverage
+# Run with coverage report
 pytest --cov=app
 
 # Run specific test file
@@ -279,65 +643,33 @@ pytest tests/test_meetings.py
 pytest -v
 ```
 
-**Test Coverage:**
-- Meeting creation and retrieval
-- ICS export functionality
-- Conflict detection with various overlap scenarios
-- Multiple participant conflict checks
+## Additional Resources
 
-## Future Improvements & Limitations
+### Postman Collection
+The repository includes a ready-to-use Postman collection (`Meeting_Scheduler_API.postman_collection.json`) with:
+- All API endpoints pre-configured
+- Automatic variable extraction (participant_id, meeting_id)
+- Example requests with realistic data
+- Test scripts for response validation
 
-### Current Limitations
+**To use:**
+1. Open Postman
+2. Click **Import**
+3. Select `Meeting_Scheduler_API.postman_collection.json`
+4. Start testing the API!
 
-1. **Notification System**: Currently simulated with logging; needs real email integration
-2. **Authentication**: No user authentication or authorization implemented
-3. **Recurring Meetings**: Does not support recurring meeting patterns
-4. **Time Zone Display**: All times returned in UTC; client-side conversion needed
-5. **Pagination**: Large meeting lists are not paginated
+### Database Schema File
+The `schema.sql` file provides a simple alternative to Alembic migrations:
+- Complete database schema in plain SQL
+- Includes all tables, indexes, and constraints
+- Helpful comments explaining each component
+- Sample data (commented out) for quick testing
+- Useful query examples
 
-### Suggested Improvements
-
-1. **Email Integration**: Implement actual email notifications using SMTP or email service APIs
-2. **Authentication & Authorization**: Add JWT-based authentication with role-based access control
-3. **Recurring Meetings**: Implement RRULE support for recurring meeting patterns
-4. **Meeting Reminders**: Add scheduled reminders before meetings
-5. **Meeting Status**: Add meeting status (scheduled, in-progress, completed, cancelled)
-6. **Participant Response Tracking**: Allow participants to accept/decline meetings
-7. **Meeting Attachments**: Support file attachments for meetings
-8. **Search Functionality**: Full-text search for meetings and participants
-9. **Pagination**: Implement cursor or offset-based pagination for large datasets
-10. **Rate Limiting**: Add API rate limiting for production use
-11. **Caching**: Implement Redis caching for frequently accessed data
-12. **Webhooks**: Support webhooks for meeting event notifications
-
-## API Endpoints Reference
-
-### Meetings
-
-- `POST /api/meetings/` - Create meeting
-- `GET /api/meetings/` - List all meetings (with filters)
-- `GET /api/meetings/{id}` - Get meeting details
-- `PUT /api/meetings/{id}` - Update meeting
-- `DELETE /api/meetings/{id}` - Delete meeting
-- `GET /api/meetings/{id}/export` - Export as ICS
-- `POST /api/meetings/{id}/participants` - Add participant
-- `DELETE /api/meetings/{id}/participants/{participant_id}` - Remove participant
-
-### Participants
-
-- `POST /api/participants/` - Create participant
-- `GET /api/participants/` - List all participants
-- `GET /api/participants/{id}` - Get participant details
-- `GET /api/participants/{id}/meetings` - Get participant's meetings
-
-### Conflicts
-
-- `POST /api/conflicts/check` - Check for scheduling conflicts
+**To use:**
+```bash
+psql -h localhost -p 5431 -U postgres -d meeting_scheduler -f schema.sql
+```
 
 ## License
-
-This project is created for the Alpha Net Python Developer assignment.
-
-## Contact
-
-For questions or issues, please contact the development team.
+Created for the Alpha Net Python Developer assignment.

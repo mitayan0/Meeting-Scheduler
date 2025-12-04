@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     """Application settings."""
 
     # Database
-    DATABASE_URL: str = "postgresql://postgres:password@db:5432/meeting_scheduler"
+    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5431/meeting_scheduler"
     
     # Application
     APP_NAME: str = "Meeting Scheduler API"
@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = True
+        extra = "ignore"
 
 
 settings = Settings()

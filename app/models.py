@@ -12,9 +12,9 @@ from app.database import Base
 
 class ParticipantStatus(str, enum.Enum):
     """Enum for participant status."""
-    PENDING = "pending"
-    ACCEPTED = "accepted"
-    DECLINED = "declined"
+    pending = "pending"
+    accepted = "accepted"
+    declined = "declined"
 
 
 class Meeting(Base):
@@ -63,7 +63,7 @@ class MeetingParticipant(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     meeting_id = Column(UUID(as_uuid=True), ForeignKey("meetings.id", ondelete="CASCADE"), nullable=False)
     participant_id = Column(UUID(as_uuid=True), ForeignKey("participants.id", ondelete="CASCADE"), nullable=False)
-    status = Column(Enum(ParticipantStatus), default=ParticipantStatus.PENDING, nullable=False)
+    status = Column(Enum(ParticipantStatus), default=ParticipantStatus.pending, nullable=False)
     notified_at = Column(DateTime(timezone=True), nullable=True)
     
     # Unique constraint

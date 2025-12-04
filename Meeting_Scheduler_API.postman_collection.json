@@ -1,0 +1,596 @@
+{
+    "info": {
+        "name": "Meeting Scheduler API",
+        "description": "Complete API collection for the Meeting Scheduler application. Import this into Postman to test all endpoints.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000",
+            "type": "string"
+        },
+        {
+            "key": "participant_id",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "participant_id_2",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "meeting_id",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Participants",
+            "item": [
+                {
+                    "name": "Create Participant",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set(\"participant_id\", jsonData.id);",
+                                    "    pm.environment.set(\"participant_id\", jsonData.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/participants/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "participants",
+                                ""
+                            ]
+                        },
+                        "description": "Create a new participant. The participant ID will be automatically saved for use in other requests."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Second Participant",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set(\"participant_id_2\", jsonData.id);",
+                                    "    pm.environment.set(\"participant_id_2\", jsonData.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Jane Smith\",\n  \"email\": \"jane.smith@example.com\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/participants/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "participants",
+                                ""
+                            ]
+                        },
+                        "description": "Create a second participant for testing multi-participant meetings."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Participants",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/participants/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "participants",
+                                ""
+                            ]
+                        },
+                        "description": "Retrieve all participants in the system."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Participant by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/participants/{{participant_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "participants",
+                                "{{participant_id}}"
+                            ]
+                        },
+                        "description": "Retrieve a specific participant by their ID."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Participant Meetings",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/participants/{{participant_id}}/meetings",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "participants",
+                                "{{participant_id}}",
+                                "meetings"
+                            ]
+                        },
+                        "description": "Get all meetings for a specific participant."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Participant",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"John Doe Updated\",\n  \"email\": \"john.doe.updated@example.com\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/participants/{{participant_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "participants",
+                                "{{participant_id}}"
+                            ]
+                        },
+                        "description": "Update an existing participant's information. Both fields are optional."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Participant",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/participants/{{participant_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "participants",
+                                "{{participant_id}}"
+                            ]
+                        },
+                        "description": "Delete a participant. This will also remove them from all meetings."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Endpoints for managing participants"
+        },
+        {
+            "name": "Meetings",
+            "item": [
+                {
+                    "name": "Create Meeting",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set(\"meeting_id\", jsonData.id);",
+                                    "    pm.environment.set(\"meeting_id\", jsonData.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"title\": \"Team Standup\",\n  \"description\": \"Daily team standup meeting\",\n  \"start_time\": \"2025-12-05T09:00:00Z\",\n  \"end_time\": \"2025-12-05T09:30:00Z\",\n  \"location\": \"Conference Room A\",\n  \"participant_ids\": [\"{{participant_id}}\"]\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "meetings",
+                                ""
+                            ]
+                        },
+                        "description": "Create a new meeting with participants. The meeting ID will be automatically saved."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Meetings",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "meetings",
+                                ""
+                            ]
+                        },
+                        "description": "Retrieve all meetings in the system."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Meetings by Participant",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings/?participant_id={{participant_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "meetings",
+                                ""
+                            ],
+                            "query": [
+                                {
+                                    "key": "participant_id",
+                                    "value": "{{participant_id}}"
+                                }
+                            ]
+                        },
+                        "description": "Filter meetings by participant ID."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Meetings by Date Range",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings/?start_date=2025-12-05T00:00:00Z&end_date=2025-12-06T00:00:00Z",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "meetings",
+                                ""
+                            ],
+                            "query": [
+                                {
+                                    "key": "start_date",
+                                    "value": "2025-12-05T00:00:00Z"
+                                },
+                                {
+                                    "key": "end_date",
+                                    "value": "2025-12-06T00:00:00Z"
+                                }
+                            ]
+                        },
+                        "description": "Filter meetings by date range."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Meeting by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings/{{meeting_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "meetings",
+                                "{{meeting_id}}"
+                            ]
+                        },
+                        "description": "Retrieve a specific meeting by its ID."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Meeting",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"title\": \"Team Standup - Updated\",\n  \"description\": \"Daily team standup meeting (updated)\",\n  \"start_time\": \"2025-12-05T09:00:00Z\",\n  \"end_time\": \"2025-12-05T09:30:00Z\",\n  \"location\": \"Conference Room B\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings/{{meeting_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "meetings",
+                                "{{meeting_id}}"
+                            ]
+                        },
+                        "description": "Update an existing meeting's information. All fields are optional."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Add Participant to Meeting",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"participant_id\": \"{{participant_id_2}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings/{{meeting_id}}/participants",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "meetings",
+                                "{{meeting_id}}",
+                                "participants"
+                            ]
+                        },
+                        "description": "Add a participant to an existing meeting. Checks for conflicts automatically."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Remove Participant from Meeting",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings/{{meeting_id}}/participants/{{participant_id_2}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "meetings",
+                                "{{meeting_id}}",
+                                "participants",
+                                "{{participant_id_2}}"
+                            ]
+                        },
+                        "description": "Remove a participant from a meeting."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Export Meeting as ICS",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings/{{meeting_id}}/export",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "meetings",
+                                "{{meeting_id}}",
+                                "export"
+                            ]
+                        },
+                        "description": "Export a meeting as an ICS calendar file. Save the response to import into your calendar application."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Meeting",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings/{{meeting_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "meetings",
+                                "{{meeting_id}}"
+                            ]
+                        },
+                        "description": "Delete a meeting. This will also remove all participant associations."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Endpoints for managing meetings"
+        },
+        {
+            "name": "Conflicts",
+            "item": [
+                {
+                    "name": "Check for Conflicts",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"participant_ids\": [\"{{participant_id}}\"],\n  \"start_time\": \"2025-12-05T09:15:00Z\",\n  \"end_time\": \"2025-12-05T09:45:00Z\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/conflicts/check",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "conflicts",
+                                "check"
+                            ]
+                        },
+                        "description": "Check if the proposed time slot conflicts with existing meetings for the specified participants."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Check for Conflicts (No Conflict)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"participant_ids\": [\"{{participant_id}}\"],\n  \"start_time\": \"2025-12-05T14:00:00Z\",\n  \"end_time\": \"2025-12-05T15:00:00Z\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/conflicts/check",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "conflicts",
+                                "check"
+                            ]
+                        },
+                        "description": "Example of checking a time slot that should have no conflicts."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Check Conflicts with Exclusion",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"participant_ids\": [\"{{participant_id}}\"],\n  \"start_time\": \"2025-12-05T09:15:00Z\",\n  \"end_time\": \"2025-12-05T09:45:00Z\",\n  \"exclude_meeting_id\": \"{{meeting_id}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/conflicts/check",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "conflicts",
+                                "check"
+                            ]
+                        },
+                        "description": "Check for conflicts while excluding a specific meeting (useful when updating a meeting)."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Endpoints for conflict detection"
+        }
+    ]
+}

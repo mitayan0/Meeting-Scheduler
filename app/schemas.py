@@ -20,6 +20,13 @@ class ParticipantCreate(ParticipantBase):
     pass
 
 
+class ParticipantUpdate(BaseModel):
+    """Schema for updating a participant."""
+    name: Optional[str] = Field(None, min_length=1, max_length=255)
+    email: Optional[EmailStr] = None
+
+
+
 class ParticipantResponse(ParticipantBase):
     """Schema for participant response."""
     id: UUID
